@@ -44,10 +44,9 @@
             <h1 class="text-4xl md:text-5xl font-bold text-darkgray mb-4">Давайте учится!</h1>
             <p class="text-midgray text-xl">Тренируйте свои математические навыки</p>
         </header>
-
         <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Equation Card -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Equation Card -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
                 <div class="bg-darkgray p-4">
                     <h2 class="text-white text-2xl font-semibold">Уравнения</h2>
@@ -66,7 +65,6 @@
                     <div id="equation-feedback" class="hidden p-3 rounded-lg"></div>
                 </div>
             </div>
-
             <!-- Problem Card -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
                 <div class="bg-darkgray p-4">
@@ -86,9 +84,68 @@
                     <div id="problem-feedback" class="hidden p-3 rounded-lg"></div>
                 </div>
             </div>
-        </div>
 
-        <!-- User Profile Card -->
+            <!-- Examples Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Примеры</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="equation-display text-3xl text-center bg-slate-100 p-4 rounded-lg mb-4">
+                            <span id="example">12 + 8</span>
+                        </div>
+                        <p class="text-midgray mb-4">Решите пример и введите ответ:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="example-answer" class="flex-1 border border-lightgray rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ваш ответ">
+                            <button onclick="checkExample()" class="bg-darkgray text-white px-6 py-2 rounded-lg hover:bg-midgray transition">Проверить</button>
+                        </div>
+                    </div>
+                    <div id="example-feedback" class="hidden p-3 rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Angles Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Углы</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="bg-slate-100 p-4 rounded-lg mb-4">
+                            <p id="angle-text" class="text-lg">Дан треугольник с углами 45° и 60°. Найдите третий угол.</p>
+                        </div>
+                        <p class="text-midgray mb-4">Найдите градус угла:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="angle-answer" class="flex-1 border border-lightgray rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ваш ответ">
+                            <button onclick="checkAngle()" class="bg-darkgray text-white px-6 py-2 rounded-lg hover:bg-midgray transition">Проверить</button>
+                        </div>
+                    </div>
+                    <div id="angle-feedback" class="hidden p-3 rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Fractions Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Дроби</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="equation-display text-3xl text-center bg-slate-100 p-4 rounded-lg mb-4">
+                            <span id="fraction">1/2 + 3/4</span>
+                        </div>
+                        <p class="text-midgray mb-4">Решите пример с дробями (ответ в виде дроби):</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="fraction-answer" class="flex-1 border border-lightgray rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ваш ответ (например: 5/4)">
+                            <button onclick="checkFraction()" class="bg-darkgray text-white px-6 py-2 rounded-lg hover:bg-midgray transition">Проверить</button>
+                        </div>
+                    </div>
+                    <div id="fraction-feedback" class="hidden p-3 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+<!-- User Profile Card -->
         <div class="mt-8 max-w-md mx-auto">
             <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
                 <div class="bg-darkgray p-4">
@@ -102,7 +159,8 @@
                         <div>
                             <h3 class="text-xl font-semibold text-darkgray" id="username">Гость</h3>
                             <p class="text-midgray">Верных ответов: <span id="score">0</span></p>
-                        </div>
+                            <p class="text-midgray">Средний балл: <span id="average-score">0</span></p>
+</div>
                     </div>
                     <div>
                         <button onclick="changeUser()" class="w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-midgray transition">Сменить пользователя</button>
@@ -119,26 +177,40 @@
     <script>
 // Initialize feather icons
         feather.replace();
-
         // User data
         let user = {
             name: 'Гость',
-            correctAnswers: 0
+            correctAnswers: 0,
+            totalQuestions: 0,
+            totalScore: 0
         };
-
-        // Current equations and problems
-        let currentEquation = {
+// Current equations, problems, examples, angles and fractions
+let currentEquation = {
             equation: '5x + 3 = 18',
             answer: '3'
         };
-
         let currentProblem = {
             text: 'Если в магазине было 25 яблок, а продали 17, сколько яблок осталось?',
             answer: '8'
         };
 
+        let currentExample = {
+            example: '12 + 8',
+            answer: '20'
+        };
+
+        let currentAngle = {
+            text: 'Дан треугольник с углами 45° и 60°. Найдите третий угол.',
+            answer: '75'
+        };
+
+        let currentFraction = {
+            fraction: '1/2 + 3/4',
+            answer: '5/4'
+        };
+
         // Generate random equation
-        function generateEquation() {
+function generateEquation() {
             const a = Math.floor(Math.random() * 10) + 1;
             const b = Math.floor(Math.random() * 20) + 1;
             const c = Math.floor(Math.random() * 30) + 1;
@@ -151,10 +223,9 @@
             document.getElementById('equation-answer').value = '';
             document.getElementById('equation-feedback').classList.add('hidden');
         }
-
         // Generate random problem
         function generateProblem() {
-            const problems = [
+const problems = [
                 {
                     text: 'Если у Маши было 15 конфет, а она отдала 7 подругам, сколько конфет у неё осталось?',
                     answer: '8'
@@ -190,42 +261,194 @@
         function checkEquation() {
             const userAnswer = document.getElementById('equation-answer').value.trim();
             const feedbackElement = document.getElementById('equation-feedback');
-            
             if (userAnswer === currentEquation.answer) {
                 feedbackElement.textContent = 'Правильно! 🎉';
                 feedbackElement.className = 'bg-green-100 text-green-700';
-                user.correctAnswers++;
-                updateScore();
+                addScore(true);
                 generateEquation();
             } else {
                 feedbackElement.textContent = 'Неправильно. Попробуйте ещё раз!';
                 feedbackElement.className = 'bg-red-100 text-red-700';
-            }
+                addScore(false);
+}
             
             feedbackElement.classList.remove('hidden');
+        }
+        // Generate random example
+        function generateExample() {
+            const operators = ['+', '-', '*', '/'];
+            const a = Math.floor(Math.random() * 50) + 1;
+            const b = Math.floor(Math.random() * 50) + 1;
+            const op = operators[Math.floor(Math.random() * operators.length)];
+            
+            let answer;
+            switch(op) {
+                case '+': answer = a + b; break;
+                case '-': answer = a - b; break;
+                case '*': answer = a * b; break;
+                case '/': 
+                    // Make sure it's divisible
+                    answer = a;
+                    b = Math.floor(Math.random() * 10) + 1;
+                    a = b * (Math.floor(Math.random() * 10) + 1);
+                    answer = a / b;
+                    break;
+            }
+            
+            currentExample.example = `${a} ${op} ${b}`;
+            currentExample.answer = answer.toString();
+            
+            document.getElementById('example').textContent = currentExample.example;
+            document.getElementById('example-answer').value = '';
+            document.getElementById('example-feedback').classList.add('hidden');
+        }
+
+        // Generate random angle problem
+        function generateAngle() {
+            const angleTypes = [
+                {
+                    text: 'Дан треугольник с углами 45° и 60°. Найдите третий угол.',
+                    answer: '75'
+                },
+                {
+                    text: 'В прямоугольном треугольнике один угол 35°. Найдите второй острый угол.',
+                    answer: '55'
+                },
+                {
+                    text: 'Сумма углов четырехугольника 360°. Если три угла 80°, 90° и 110°, найдите четвертый угол.',
+                    answer: '80'
+                },
+                {
+                    text: 'Два угла треугольника равны 50° и 70°. Найдите третий угол.',
+                    answer: '60'
+                },
+                {
+                    text: 'Один угол параллелограмма 120°. Найдите остальные углы.',
+                    answer: '60'
+                }
+            ];
+            
+            const randomAngle = angleTypes[Math.floor(Math.random() * angleTypes.length)];
+            currentAngle.text = randomAngle.text;
+            currentAngle.answer = randomAngle.answer;
+            
+            document.getElementById('angle-text').textContent = currentAngle.text;
+            document.getElementById('angle-answer').value = '';
+            document.getElementById('angle-feedback').classList.add('hidden');
+        }
+
+        // Generate random fraction problem
+        function generateFraction() {
+            const fractionTypes = [
+                {
+                    fraction: '1/2 + 3/4',
+                    answer: '5/4'
+                },
+                {
+                    fraction: '2/3 - 1/6',
+                    answer: '1/2'
+                },
+                {
+                    fraction: '3/4 * 2/3',
+                    answer: '1/2'
+                },
+                {
+                    fraction: '1/2 ÷ 1/4',
+                    answer: '2'
+                },
+                {
+                    fraction: '0.5 + 0.25',
+                    answer: '3/4'
+                },
+                {
+                    fraction: '1 1/2 + 2 1/4',
+                    answer: '15/4'
+                }
+            ];
+            
+            const randomFraction = fractionTypes[Math.floor(Math.random() * fractionTypes.length)];
+            currentFraction.fraction = randomFraction.fraction;
+            currentFraction.answer = randomFraction.answer;
+            
+            document.getElementById('fraction').textContent = currentFraction.fraction;
+            document.getElementById('fraction-answer').value = '';
+            document.getElementById('fraction-feedback').classList.add('hidden');
         }
 
         // Check problem answer
         function checkProblem() {
             const userAnswer = document.getElementById('problem-answer').value.trim();
             const feedbackElement = document.getElementById('problem-feedback');
-            
             if (userAnswer === currentProblem.answer) {
                 feedbackElement.textContent = 'Верно! 👍';
                 feedbackElement.className = 'bg-green-100 text-green-700';
-                user.correctAnswers++;
-                updateScore();
+                addScore(true);
                 generateProblem();
             } else {
                 feedbackElement.textContent = 'Ошибка. Подумайте ещё!';
                 feedbackElement.className = 'bg-red-100 text-red-700';
-            }
+                addScore(false);
+}
+            
+            feedbackElement.classList.remove('hidden');
+        }
+
+        // Check example answer
+        function checkExample() {
+            const userAnswer = document.getElementById('example-answer').value.trim();
+            const feedbackElement = document.getElementById('example-feedback');
+            if (userAnswer === currentExample.answer) {
+                feedbackElement.textContent = 'Правильно! ✅';
+                feedbackElement.className = 'bg-green-100 text-green-700';
+                addScore(true);
+                generateExample();
+            } else {
+                feedbackElement.textContent = 'Неправильно. Попробуйте снова!';
+                feedbackElement.className = 'bg-red-100 text-red-700';
+                addScore(false);
+}
+            
+            feedbackElement.classList.remove('hidden');
+        }
+
+        // Check angle answer
+        function checkAngle() {
+            const userAnswer = document.getElementById('angle-answer').value.trim();
+            const feedbackElement = document.getElementById('angle-feedback');
+            if (userAnswer === currentAngle.answer) {
+                feedbackElement.textContent = 'Верно! ✔️';
+                feedbackElement.className = 'bg-green-100 text-green-700';
+                addScore(true);
+                generateAngle();
+            } else {
+                feedbackElement.textContent = 'Неверно. Попробуйте ещё!';
+                feedbackElement.className = 'bg-red-100 text-red-700';
+                addScore(false);
+}
+            
+            feedbackElement.classList.remove('hidden');
+        }
+
+        // Check fraction answer
+        function checkFraction() {
+            const userAnswer = document.getElementById('fraction-answer').value.trim().toLowerCase();
+            const feedbackElement = document.getElementById('fraction-feedback');
+            if (userAnswer === currentFraction.answer) {
+                feedbackElement.textContent = 'Правильно! 🎯';
+                feedbackElement.className = 'bg-green-100 text-green-700';
+                addScore(true);
+                generateFraction();
+            } else {
+                feedbackElement.textContent = 'Ошибка. Проверьте решение!';
+                feedbackElement.className = 'bg-red-100 text-red-700';
+                addScore(false);
+}
             
             feedbackElement.classList.remove('hidden');
         }
 
         // Change user
-        function changeUser() {
+function changeUser() {
             const newName = prompt('Введите ваше имя:', user.name);
             if (newName) {
                 user.name = newName;
@@ -236,11 +459,26 @@
         // Update score
         function updateScore() {
             document.getElementById('score').textContent = user.correctAnswers;
+            const average = user.totalQuestions > 0 ? (user.totalScore / user.totalQuestions).toFixed(1) : 0;
+            document.getElementById('average-score').textContent = average;
         }
 
-        // Initialize
+        function addScore(isCorrect) {
+            user.totalQuestions++;
+            if (isCorrect) {
+                user.correctAnswers++;
+                user.totalScore += 5; // 5 баллов за правильный ответ
+            } else {
+                user.totalScore += 0; // 0 баллов за неправильный
+            }
+            updateScore();
+        }
+// Initialize
         generateEquation();
         generateProblem();
-    </script>
+        generateExample();
+        generateAngle();
+        generateFraction();
+</script>
 </body>
 </html>
