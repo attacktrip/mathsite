@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Давайте учится!</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkgray: '#2D3748',
+                        midgray: '#4A5568',
+                        lightgray: '#CBD5E0',
+                        slate: '#E2E8F0',
+                        accent: '#718096'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .equation-display {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-darkgray mb-4">Давайте учится!</h1>
+            <p class="text-midgray text-xl">Тренируйте свои математические навыки</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Equation Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Уравнения</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="equation-display text-3xl text-center bg-slate-100 p-4 rounded-lg mb-4">
+                            <span id="equation">5x + 3 = 18</span>
+                        </div>
+                        <p class="text-midgray mb-4">Решите уравнение и введите ответ:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="equation-answer" class="flex-1 border border-lightgray rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ваш ответ">
+                            <button onclick="checkEquation()" class="bg-darkgray text-white px-6 py-2 rounded-lg hover:bg-midgray transition">Проверить</button>
+                        </div>
+                    </div>
+                    <div id="equation-feedback" class="hidden p-3 rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Problem Card -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Задачи</h2>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="bg-slate-100 p-4 rounded-lg mb-4">
+                            <p id="problem-text" class="text-lg">Если в магазине было 25 яблок, а продали 17, сколько яблок осталось?</p>
+                        </div>
+                        <p class="text-midgray mb-4">Решите задачу и введите ответ:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="problem-answer" class="flex-1 border border-lightgray rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Ваш ответ">
+                            <button onclick="checkProblem()" class="bg-darkgray text-white px-6 py-2 rounded-lg hover:bg-midgray transition">Проверить</button>
+                        </div>
+                    </div>
+                    <div id="problem-feedback" class="hidden p-3 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Card -->
+        <div class="mt-8 max-w-md mx-auto">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                <div class="bg-darkgray p-4">
+                    <h2 class="text-white text-2xl font-semibold">Пользователь</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-16 h-16 rounded-full bg-midgray flex items-center justify-center text-white text-2xl">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-darkgray" id="username">Гость</h3>
+                            <p class="text-midgray">Верных ответов: <span id="score">0</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="changeUser()" class="w-full bg-accent text-white px-4 py-2 rounded-lg hover:bg-midgray transition">Сменить пользователя</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-12 mb-6 text-midgray">
+        <p>Сделал Клементьев Семён</p>
+    </footer>
+
+    <script>
+// Initialize feather icons
+        feather.replace();
+
+        // User data
+        let user = {
+            name: 'Гость',
+            correctAnswers: 0
+        };
+
+        // Current equations and problems
+        let currentEquation = {
+            equation: '5x + 3 = 18',
+            answer: '3'
+        };
+
+        let currentProblem = {
+            text: 'Если в магазине было 25 яблок, а продали 17, сколько яблок осталось?',
+            answer: '8'
+        };
+
+        // Generate random equation
+        function generateEquation() {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 20) + 1;
+            const c = Math.floor(Math.random() * 30) + 1;
+            
+            // Simple linear equation: ax + b = c
+            currentEquation.equation = `${a}x + ${b} = ${c}`;
+            currentEquation.answer = ((c - b) / a).toString();
+            
+            document.getElementById('equation').textContent = currentEquation.equation;
+            document.getElementById('equation-answer').value = '';
+            document.getElementById('equation-feedback').classList.add('hidden');
+        }
+
+        // Generate random problem
+        function generateProblem() {
+            const problems = [
+                {
+                    text: 'Если у Маши было 15 конфет, а она отдала 7 подругам, сколько конфет у неё осталось?',
+                    answer: '8'
+                },
+                {
+                    text: 'В классе 28 учеников. Если 12 из них девочки, сколько мальчиков в классе?',
+                    answer: '16'
+                },
+                {
+                    text: 'Книга стоит 450 рублей. Сколько стоят 3 такие книги?',
+                    answer: '1350'
+                },
+                {
+                    text: 'Автобус проезжает 60 км за час. Сколько км он проедет за 4 часа?',
+                    answer: '240'
+                },
+                {
+                    text: 'Если разделить 81 на 9, сколько получится?',
+                    answer: '9'
+                }
+            ];
+            
+            const randomProblem = problems[Math.floor(Math.random() * problems.length)];
+            currentProblem.text = randomProblem.text;
+            currentProblem.answer = randomProblem.answer;
+            
+            document.getElementById('problem-text').textContent = currentProblem.text;
+            document.getElementById('problem-answer').value = '';
+            document.getElementById('problem-feedback').classList.add('hidden');
+        }
+
+        // Check equation answer
+        function checkEquation() {
+            const userAnswer = document.getElementById('equation-answer').value.trim();
+            const feedbackElement = document.getElementById('equation-feedback');
+            
+            if (userAnswer === currentEquation.answer) {
+                feedbackElement.textContent = 'Правильно! 🎉';
+                feedbackElement.className = 'bg-green-100 text-green-700';
+                user.correctAnswers++;
+                updateScore();
+                generateEquation();
+            } else {
+                feedbackElement.textContent = 'Неправильно. Попробуйте ещё раз!';
+                feedbackElement.className = 'bg-red-100 text-red-700';
+            }
+            
+            feedbackElement.classList.remove('hidden');
+        }
+
+        // Check problem answer
+        function checkProblem() {
+            const userAnswer = document.getElementById('problem-answer').value.trim();
+            const feedbackElement = document.getElementById('problem-feedback');
+            
+            if (userAnswer === currentProblem.answer) {
+                feedbackElement.textContent = 'Верно! 👍';
+                feedbackElement.className = 'bg-green-100 text-green-700';
+                user.correctAnswers++;
+                updateScore();
+                generateProblem();
+            } else {
+                feedbackElement.textContent = 'Ошибка. Подумайте ещё!';
+                feedbackElement.className = 'bg-red-100 text-red-700';
+            }
+            
+            feedbackElement.classList.remove('hidden');
+        }
+
+        // Change user
+        function changeUser() {
+            const newName = prompt('Введите ваше имя:', user.name);
+            if (newName) {
+                user.name = newName;
+                document.getElementById('username').textContent = user.name;
+            }
+        }
+
+        // Update score
+        function updateScore() {
+            document.getElementById('score').textContent = user.correctAnswers;
+        }
+
+        // Initialize
+        generateEquation();
+        generateProblem();
+    </script>
+</body>
+</html>
